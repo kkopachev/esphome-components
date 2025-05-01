@@ -7,7 +7,7 @@ from esphome.const import CONF_ID
 
 # We depend on the ssd1306_i2c component
 DEPENDENCIES = ["ssd1306_i2c"]
-AUTO_LOAD = ["ssd1306_i2c"]
+AUTO_LOAD = ["ssd1306_i2c", "ssd1306_base", "i2c"]
 
 # Add our custom width config parameter
 CONF_CUSTOM_WIDTH = "custom_width"
