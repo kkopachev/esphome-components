@@ -1,13 +1,12 @@
 #pragma once
 
-#include "esphome/core/component.h"
 #include "esphome/components/ssd1306_i2c/ssd1306_i2c.h"
-#include "esphome/components/i2c/i2c.h"
 
 namespace esphome {
 namespace custom_width_ssd1306_i2c {
 
-class CustomWidthSH1106 : public ssd1306_i2c::I2CSSD1306 {
+// Simply extend the existing I2CSSD1306 class with our custom width functionality
+class CustomWidthSSD1306 : public ssd1306_i2c::I2CSSD1306 {
  public:
   // Set custom width
   void set_custom_width(uint8_t width) { this->custom_width_ = width; }
@@ -15,7 +14,7 @@ class CustomWidthSH1106 : public ssd1306_i2c::I2CSSD1306 {
   // Override get_width_internal to use our custom width
   int get_width_internal() override;
 
-  // For dumping config information
+  // For logging the custom width
   void dump_config() override;
 
  protected:
