@@ -34,7 +34,7 @@ template<typename... Ts> class I2CEncoderIncrementAction : public Action<Ts...> 
  public:
   I2CEncoderIncrementAction(I2CEncoderV2Component *parent) : parent_(parent) {}
 
-  void play(const Ts &... args) override { (void)args; this->parent_->increment(); }
+  void play(const Ts &... args) override { (void)sizeof...(args); this->parent_->increment(); }
 
  protected:
   I2CEncoderV2Component *parent_;
@@ -44,7 +44,7 @@ template<typename... Ts> class I2CEncoderDecrementAction : public Action<Ts...> 
  public:
   I2CEncoderDecrementAction(I2CEncoderV2Component *parent) : parent_(parent) {}
 
-  void play(const Ts &... args) override { (void)args; this->parent_->decrement(); }
+  void play(const Ts &... args) override { (void)sizeof...(args); this->parent_->decrement(); }
 
  protected:
   I2CEncoderV2Component *parent_;
