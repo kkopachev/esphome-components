@@ -132,7 +132,6 @@ void I2CEncoderV2Component::reset() {
 
 bool I2CEncoderV2Component::update_status() {
   this->status_ = this->read_encoder_byte(REG_ESTATUS);
-  this->status2_ = 0;
 
   if (this->status_ == 0) {
     return false;
