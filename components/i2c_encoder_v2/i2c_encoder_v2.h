@@ -251,7 +251,6 @@ class I2CEncoderV2Component : public Component, public i2c::I2CDevice {
 
   // Status registers
   uint8_t status_{0};
-  uint8_t status2_{0};
   uint16_t gconf_{0};
 
   // Update timings
@@ -260,7 +259,6 @@ class I2CEncoderV2Component : public Component, public i2c::I2CDevice {
 
   // Low level I2C functions
   uint8_t read_encoder_byte(uint8_t reg);
-  int16_t read_encoder_int(uint8_t reg);
   int32_t read_encoder_long(uint8_t reg);
   float read_encoder_float(uint8_t reg);
   void write_encoder_byte(uint8_t reg, uint8_t data);

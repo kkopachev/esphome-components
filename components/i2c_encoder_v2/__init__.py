@@ -8,9 +8,7 @@ from esphome.const import (
     CONF_MIN_VALUE,
     CONF_OUTPUT_ID,
     CONF_STEP,
-    DEVICE_CLASS_EMPTY,
     STATE_CLASS_MEASUREMENT,
-    UNIT_EMPTY,
 )
 
 DEPENDENCIES = ["i2c"]
@@ -101,9 +99,7 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(I2CEncoderV2Component),
         cv.Optional(CONF_POSITION): sensor.sensor_schema(
-            unit_of_measurement=UNIT_EMPTY,
             accuracy_decimals=2,
-            device_class=DEVICE_CLASS_EMPTY,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_BUTTON): binary_sensor.binary_sensor_schema(),
@@ -270,6 +266,7 @@ async def to_code(config):
             cv.Required("position"): cv.templatable(cv.float_),
         }
     ),
+    synchronous=True,
 )
 async def i2c_encoder_v2_set_position_to_code(config, action_id, template_arg, args):
     parent = await cg.get_variable(config[CONF_ID])
@@ -288,6 +285,7 @@ async def i2c_encoder_v2_set_position_to_code(config, action_id, template_arg, a
             cv.Required(CONF_ID): cv.use_id(I2CEncoderV2Component),
         }
     ),
+    synchronous=True,
 )
 async def i2c_encoder_v2_increment_to_code(config, action_id, template_arg, args):
     parent = await cg.get_variable(config[CONF_ID])
@@ -303,6 +301,7 @@ async def i2c_encoder_v2_increment_to_code(config, action_id, template_arg, args
             cv.Required(CONF_ID): cv.use_id(I2CEncoderV2Component),
         }
     ),
+    synchronous=True,
 )
 async def i2c_encoder_v2_decrement_to_code(config, action_id, template_arg, args):
     parent = await cg.get_variable(config[CONF_ID])

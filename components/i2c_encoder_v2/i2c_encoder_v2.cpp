@@ -68,7 +68,9 @@ void I2CEncoderV2Component::setup() {
     this->auto_config_interrupt();
   }
 
-  this->position_sensor_->publish_state(this->initial_position_);
+  if (this->position_sensor_ != nullptr) {
+    this->position_sensor_->publish_state(this->initial_position_);
+  }
 
   ESP_LOGD(TAG, "I2C Encoder V2 initialized");
 }
@@ -104,7 +106,7 @@ void I2CEncoderV2Component::dump_config() {
   if (this->double_push_enabled_)
     ESP_LOGCONFIG(TAG, "  Double Push Period: %d ms", this->double_push_period_ * 10);
 
-  ESP_LOGCONFIG(TAG, "  Anti-bouncing: %d ms", this->anti_bouncing_ * 192 / 1000);
+  ESP_LOGCONFIG(TAG, "  Anti-bouncing: %d us", this->anti_bouncing_ * 192);
 
   if (this->rgb_encoder_) {
     ESP_LOGCONFIG(TAG, "  Fade RGB: %d ms", this->fade_rgb_);
@@ -181,9 +183,9 @@ bool I2CEncoderV2Component::update_status() {
     this->on_min_callback_.call();
   }
 
-  // Handle INT2 events
+  // Read I2STATUS to clear the INT_2 flag on the device
   if ((this->status_ & INT_2) != 0) {
-    this->status2_ = this->read_encoder_byte(REG_I2STATUS);
+    this->read_encoder_byte(REG_I2STATUS);
   }
 
   return true;
@@ -198,9 +200,7 @@ void I2CEncoderV2Component::set_rgb_led_g(uint8_t g) { this->write_encoder_byte(
 void I2CEncoderV2Component::set_rgb_led_b(uint8_t b) { this->write_encoder_byte(REG_BLED, b); }
 
 void I2CEncoderV2Component::set_rgb_led(uint8_t r, uint8_t g, uint8_t b) {
-  this->set_rgb_led_r(r);
-  this->set_rgb_led_g(g);
-  this->set_rgb_led_b(b);
+  this->write_encoder_rgb(REG_RLED, (static_cast<uint32_t>(r) << 16) | (static_cast<uint32_t>(g) << 8) | b);
 }
 
 void I2CEncoderV2Component::increment() {
@@ -313,16 +313,6 @@ uint8_t I2CEncoderV2Component::read_encoder_byte(uint8_t reg) {
   return data;
 }
 
-int16_t I2CEncoderV2Component::read_encoder_int(uint8_t reg) {
-  uint8_t data[2];
-  auto ret = this->read_register(reg, data, 2);
-  if (ret != i2c::ERROR_OK) {
-    ESP_LOGW(TAG, "Failed to read register 0x%02X", reg);
-    return 0;
-  }
-  return (data[0] << 8) | data[1];
-}
-
 int32_t I2CEncoderV2Component::read_encoder_long(uint8_t reg) {
   uint8_t data[4];
   auto ret = this->read_register(reg, data, 4);
@@ -330,7 +320,8 @@ int32_t I2CEncoderV2Component::read_encoder_long(uint8_t reg) {
     ESP_LOGW(TAG, "Failed to read register 0x%02X", reg);
     return 0;
   }
-  return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
+  return static_cast<int32_t>((static_cast<uint32_t>(data[0]) << 24) | (static_cast<uint32_t>(data[1]) << 16) |
+                              (static_cast<uint32_t>(data[2]) << 8) | data[3]);
 }
 
 float I2CEncoderV2Component::read_encoder_float(uint8_t reg) {
